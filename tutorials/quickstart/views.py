@@ -1,26 +1,17 @@
 # Create your views here.
 from django.contrib.auth.models import Group, User
-from quickstart.models import Snippet
-from quickstart.serializers import SnippetSerializer, UserSerializer
-from rest_framework import generics, permissions, viewsets
-from tutorial.quickstart.serializers import GroupSerializer
-from quickstart.permissions import IsOwnerOrReadOnly
-from rest_framework.decorators import api_view
+from rest_framework import permissions
+from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
-from rest_framework import renderers
+from tutorial.quickstart.serializers import GroupSerializer
+
+from quickstart.models import Snippet
+from quickstart.permissions import IsOwnerOrReadOnly
+from quickstart.serializers import SnippetSerializer, UserSerializer
+from rest_framework import viewsets, renderers
 
 
-class SnippetHighlight(generics.GenericAPIView):
-    queryset = Snippet.objects.all()
-    renderer_classes = [renderers.StaticHTMLRenderer]
-
-    def get(self, request, *args, **kwargs):
-        snippet = self.get_object()
-        return Response(snippet.highlighted)
-
-
-@api_view(["GET"])
 def api_root(request, format=None):
     return Response(
         {
@@ -32,16 +23,14 @@ def api_root(request, format=None):
     )
 
 
-class SnippetList(generics.ListCreateAPIView):
-    queryset = Snippet.objects.all()
-    serializer_class = SnippetSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+class SnippetViewSet(viewsets.ModelViewSet):
+    """
+    This ViewSet automatically provides `list`, `create`, `retrieve`,
+    `update` and `destroy` actions.
 
-    def perform_create(self, serializer):
-        serializer.save(owner=self.request.user)
+    Additionally we also provide an extra `highlight` action.
+    """
 
-
-class SnippetDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Snippet.objects.all()
     serializer_class = SnippetSerializer
     permission_classes = [
@@ -49,15 +38,13 @@ class SnippetDetail(generics.RetrieveUpdateDestroyAPIView):
         IsOwnerOrReadOnly,
     ]
 
+    @action(detail=True, renderer_classes=[renderers.StaticHTMLRenderer])
+    def highlight(self, request, *args, **kwargs):
+        snippet = self.get_object()
+        return Response(snippet.highlighted)
 
-class UserViewSet(viewsets.ModelViewSet):
-    """
-    API endpoint that allows users to be viewed or edited.
-    """
-
-    queryset = User.objects.all().order_by("-date_joined")
-    serializer_class = UserSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    def perform_create(self, serializer):
+        serializer.save(owner=self.request.user)
 
 
 class GroupViewSet(viewsets.ModelViewSet):
@@ -70,11 +57,10 @@ class GroupViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
 
 
-class UserList(generics.ListAPIView):
-    queryset = User.objects.all()
-    serializer_class = UserSerializer
+class UserViewSet(viewsets.ReadOnlyModelViewSet):
+    """
+    This viewset automatically provides `list` and `retrieve` actions.
+    """
 
-
-class UserDetail(generics.RetrieveAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
