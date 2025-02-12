@@ -1,3 +1,5 @@
+"""This module defines the URL configuration for the quickstart app."""
+
 from django.urls import include, path
 from quickstart import views
 from rest_framework.routers import DefaultRouter

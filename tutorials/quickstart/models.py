@@ -1,3 +1,5 @@
+"""This module defines the models for the quickstart app."""
+
 from django.db import models
 from pygments import highlight
 from pygments.formatters.html import HtmlFormatter

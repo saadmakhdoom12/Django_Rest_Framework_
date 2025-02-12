@@ -1,3 +1,5 @@
+"""This module contains the serializers for the quickstart app."""
+
 from django.contrib.auth.models import User
 from quickstart.models import Snippet
 from rest_framework import serializers

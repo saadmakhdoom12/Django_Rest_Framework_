@@ -1,3 +1,5 @@
+"""This module contains the custom permission classes for quickstart app."""
+
 from rest_framework import permissions
 
 

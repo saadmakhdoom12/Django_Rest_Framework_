@@ -1,4 +1,5 @@
-# Create your views here.
+"""This module contains the views for the quickstart app."""
+
 from django.contrib.auth.models import Group, User
 from rest_framework import permissions
 from rest_framework.decorators import action
