@@ -49,5 +49,3 @@ class Snippet(models.Model):
     class Meta:
         ordering = ["created"]
 
-# this is the model file.
-# This file defines the models for the quickstart app.
