@@ -13,3 +13,7 @@ router.register(r"users", views.UserViewSet, basename="user")
 urlpatterns = [
     path("", include(router.urls)),
 ]
+
+# This is the URL configuration file.
+# Compare this snippet from tutorials/quickstart/views.py:
+# """This module contains the view classes for quickstart app."""
